@@ -42,8 +42,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .email(request.getUsername())
                 .username(request.getName())
                 .password(passwordEncoder.encode(request
-                        .getPassword())).role(ERole.ROLE_CLIENT)
-                .isConfirmed(false)
+                        .getPassword())).role(ERole.ROLE_FREE)
                 .newsSubscribed(request.getNewsSubscribed())
                 .build();
 
@@ -93,7 +92,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             emailsPinsRepository.delete(emailPin);
             User user = userRepository.findByUsername(email)
                     .orElseThrow(() -> new UsernameNotFoundException(email));
-            user.setIsConfirmed(true);
             userRepository.save(user);
         } else throw new InvalidPinException(pin);
     }

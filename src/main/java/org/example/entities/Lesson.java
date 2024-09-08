@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @Table(name = "lessons")
 @NoArgsConstructor
-public class Lesson {
+public class Lesson {  //отдавать дтохой
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,9 +27,9 @@ public class Lesson {
 
     private String content;
 
-    private String practiceTask;
+    private String practiceTask;  //get если есть подписка
 
-    private String imgUrl;
+    private String videoUrl;
 
     private String duration;
 
@@ -37,14 +37,12 @@ public class Lesson {
 
     private LocalDateTime completedSetTime;
 
-    private Boolean accessability;
+    @Enumerated(EnumType.STRING)
+    private EAccess accessLevel;
 
     private Boolean isFavourite;
 
     private LocalDateTime favouriteSetTime;
-
-    @Lob
-    private String testQuestions;
 
     @ManyToMany
     private List<Tag> tags;

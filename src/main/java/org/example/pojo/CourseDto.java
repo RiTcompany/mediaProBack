@@ -2,6 +2,7 @@ package org.example.pojo;
 
 import lombok.Builder;
 import lombok.Data;
+import org.example.entities.EAccess;
 
 import java.util.Date;
 import java.util.List;
@@ -19,5 +20,6 @@ public class CourseDto {
     private Date startTime;
     private Boolean isStarted;
     private Boolean isAvailable;
+    private EAccess accessLevel;
     private List<LessonDto> lessons;
 }

@@ -35,9 +35,6 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private ERole role;
 
-    @Column(name = "is_confirmed", nullable = false)
-    private Boolean isConfirmed;
-
     @Column(name = "is_subscribed_to_news", nullable = false)
     private Boolean newsSubscribed;
 
@@ -47,7 +44,6 @@ public class User implements UserDetails {
         this.username = username;
         this.password = password;
         this.role = role;
-        this.isConfirmed = false;
         this.newsSubscribed = newsSubscribed;
     }
 

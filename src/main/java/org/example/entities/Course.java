@@ -33,7 +33,11 @@ public class Course {
 
     private LocalDateTime startTime;
 
-    private Boolean isAvailable;
+    @OneToOne
+    private Test courseTest;
+
+    @Enumerated(EnumType.STRING)
+    private EAccess accessLevel;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Lesson> lessons;

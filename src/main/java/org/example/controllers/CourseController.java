@@ -7,8 +7,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.example.entities.Course;
+import org.example.entities.Test;
 import org.example.exceptions.ResourceNotFoundException;
 import org.example.pojo.CourseDto;
+import org.example.pojo.FavouritesDto;
+import org.example.pojo.TestDto;
 import org.example.services.impl.CourseServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +47,7 @@ public class CourseController {
     }
 
     @Operation(summary = "Установить/снять флаг завершенности курса")
+    @Deprecated
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Флаг завершенности успешно обновлен",
                     content = @Content(schema = @Schema(implementation = Course.class))),
@@ -54,4 +58,27 @@ public class CourseController {
     public Course setComplete(@PathVariable Long id, @RequestParam boolean isComplete) {
         return courseService.setComplete(id, isComplete);
     }
+
+
+    @Operation(summary = "Получить итоговый тест курса")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Итоговый тест успешно получен",
+                    content = @Content(schema = @Schema(implementation = Test.class)))
+    })
+    @GetMapping("/{id}/test")
+    public TestDto getCourseTest(@PathVariable Long id) {
+        return courseService.getCourseTest(id);
+    }
+
+
+    @Operation(summary = "Получить список избранного")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Список избранного успешно получен",
+                    content = @Content(schema = @Schema(implementation = Test.class)))
+    })
+    @GetMapping("/favourites")
+    public FavouritesDto getFavourites() {
+        return courseService.getFavourites();
+    }
+
 }

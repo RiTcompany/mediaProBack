@@ -2,9 +2,10 @@ package org.example.pojo;
 
 import lombok.Builder;
 import lombok.Data;
-import org.example.entities.Course;
+import org.example.entities.EAccess;
 import org.example.entities.Tag;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -13,7 +14,7 @@ public class LessonDto {
 
     private Long id;
 
-    private Course course;
+    private Long courseId;
 
     private String name;
 
@@ -23,9 +24,13 @@ public class LessonDto {
 
     private Boolean isCompleted;
 
-    private Boolean accessability;
+    private Boolean isAvailable;
 
     private Boolean isFavourite;
+
+    private String accessLevel;
+
+    private LocalDateTime favouriteSetTime;
 
     private List<Tag> tags;
 }

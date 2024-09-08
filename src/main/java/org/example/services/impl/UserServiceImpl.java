@@ -56,7 +56,7 @@ public class UserServiceImpl implements org.example.services.UserService {
     @Deprecated
     public void getAdmin() {
         var user = getCurrentUser();
-        user.setRole(ERole.ROLE_ADMIN);
+        user.setRole(ERole.ROLE_STANDARD);
         save(user);
     }
 }
