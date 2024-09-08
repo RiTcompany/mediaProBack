@@ -27,7 +27,7 @@ public class Lesson {  //отдавать дтохой
 
     private String content;
 
-    private String practiceTask;  //get если есть подписка
+    private String practiceTask;
 
     private String videoUrl;
 
