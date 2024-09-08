@@ -74,7 +74,7 @@ public class CourseController {
     @Operation(summary = "Получить список избранного")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Список избранного успешно получен",
-                    content = @Content(schema = @Schema(implementation = Test.class)))
+                    content = @Content(schema = @Schema(implementation = FavouritesDto.class)))
     })
     @GetMapping("/favourites")
     public FavouritesDto getFavourites() {

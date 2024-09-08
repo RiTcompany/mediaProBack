@@ -59,7 +59,7 @@ public class LessonController {
     @Operation(summary = "Получить практическое задание к уроку")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Практическое задание к уроку успешно получено",
-                    content = @Content(schema = @Schema(implementation = Test.class)))
+                    content = @Content(schema = @Schema(implementation = String.class)))
     })
     @GetMapping("/{id}/practice")
     public String getPracticeTask(@PathVariable Long id) {
