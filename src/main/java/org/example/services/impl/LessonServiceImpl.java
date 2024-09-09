@@ -5,9 +5,7 @@ import org.example.entities.EAccess;
 import org.example.entities.Lesson;
 import org.example.entities.User;
 import org.example.exceptions.HaveNoAccessLevelException;
-import org.example.exceptions.InvalidRoleException;
 import org.example.exceptions.ResourceNotFoundException;
-import org.example.pojo.LessonDto;
 import org.example.pojo.LessonFullDto;
 import org.example.repositories.LessonRepository;
 import org.example.repositories.UserRepository;
@@ -16,7 +14,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +46,7 @@ public class LessonServiceImpl {
     }
 
     public String getPracticeTask(Long id) {
-        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
         String role = user.getRole().name().substring(5);
         if (role.equals(EAccess.PRO.name()) || role.equals(EAccess.STANDARD.name())) {

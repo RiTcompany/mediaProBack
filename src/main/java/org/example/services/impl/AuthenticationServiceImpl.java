@@ -57,7 +57,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtAuthenticationResponse signIn(SignInRequest request) {
-        User user = userRepository.findByUsername(request.getUsername())
+        User user = userRepository.findByEmail(request.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not fount by username: " + request.getUsername()));
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             UserDetails userDetails = userService
@@ -74,7 +74,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void sendValidationMsgToEmail(String email) {
         Random random = new Random();
-        int randomNumber = random.nextInt(9000) + 1000;
+        int randomNumber = random.nextInt(900000) + 100000;
         emailService.sendSimpleEmail(
                 email,
                 "Подтверждение почты",
@@ -90,7 +90,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .orElseThrow(() -> new EmailPinNotFoundException(email));
         if (emailPin.getPin() == pin) {
             emailsPinsRepository.delete(emailPin);
-            User user = userRepository.findByUsername(email)
+            User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException(email));
             userRepository.save(user);
         } else throw new InvalidPinException(pin);
@@ -103,7 +103,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Long changePassword(ChangePasswordRequest changePasswordRequest) {
-        User user = userRepository.findByUsername(changePasswordRequest.getUsername())
+        User user = userRepository.findByEmail(changePasswordRequest.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException(changePasswordRequest.getUsername()));
         if (passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
             user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
@@ -133,7 +133,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .orElseThrow(() -> new EmailPinNotFoundException(forgotPasswordRequest.getUsername()));
         if (emailPin.getPin() == pin) {
             emailsPinsRepository.delete(emailPin);
-            User user = userRepository.findByUsername(forgotPasswordRequest.getUsername())
+            User user = userRepository.findByEmail(forgotPasswordRequest.getUsername())
                     .orElseThrow(() -> new UsernameNotFoundException(forgotPasswordRequest.getUsername()));
             user.setPassword(passwordEncoder.encode(forgotPasswordRequest.getPassword()));
             return userRepository.save(user).getId();

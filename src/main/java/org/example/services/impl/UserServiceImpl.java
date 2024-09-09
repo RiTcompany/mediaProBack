@@ -34,7 +34,7 @@ public class UserServiceImpl implements org.example.services.UserService {
 
     @Override
     public User getByUsername(String username) {
-        return repository.findByUsername(username)
+        return repository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
     }
 

@@ -35,7 +35,7 @@ public class CourseServiceImpl {
     }
 
     private CourseDto convertToCourseDto(Course course) {
-        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
 
         List<LessonDto> lessonDtos = course.getLessons().stream()
@@ -68,7 +68,7 @@ public class CourseServiceImpl {
     }
 
     private LessonDto convertToLessonDto(Lesson lesson) {
-        User user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
 
         String role = user.getRole().name().substring(5);
