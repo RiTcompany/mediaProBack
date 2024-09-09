@@ -39,7 +39,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
 
         User user = User.builder()
-                .email(request.getUsername())
+                .email(request.getEmail())
                 .username(request.getName())
                 .password(passwordEncoder.encode(request
                         .getPassword())).role(ERole.ROLE_FREE)
@@ -116,7 +116,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void forgotPassword(String email) {
         Random random = new Random();
-        int randomNumber = random.nextInt(9000) + 1000;
+        int randomNumber = random.nextInt(900000) + 100000;
         emailService.sendSimpleEmail(
                 email,
                 "Восстановление доступа к аккаунту",

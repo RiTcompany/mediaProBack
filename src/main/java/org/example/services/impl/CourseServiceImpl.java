@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,6 @@ public class CourseServiceImpl {
 
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
-    private final QuestionAnswerRepository questionAnswerRepository;
     private final TestRepository testRepository;
     private final LessonRepository lessonRepository;
 
@@ -122,5 +122,20 @@ public class CourseServiceImpl {
         return FavouritesDto.builder()
                 .favouriteCourses(courseRepository.findAllByIsFavouriteTrue().stream().map(Course::getId).toList())
                 .favouriteLessons(lessonRepository.findAllByIsFavouriteTrue().stream().map(Lesson::getId).toList()).build();
+    }
+
+    public Long checkTest(Long id, List<Long> answerIds) {
+        String trueAnswers = testRepository.findByCourseId(id).getTrueAnswers();
+        List<Long> trueAnswerIds = Arrays.stream(trueAnswers.split(","))
+                .map(String::trim)
+                .map(Long::valueOf)
+                .toList();
+        Long trueAnswersNumber = 0L;
+        for (int i = 0; i < answerIds.size(); i++) {
+            if (trueAnswerIds.get(i).equals(answerIds.get(i))) {
+                trueAnswersNumber++;
+            }
+        }
+        return trueAnswersNumber;
     }
 }

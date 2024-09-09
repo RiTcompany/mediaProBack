@@ -81,4 +81,14 @@ public class CourseController {
         return courseService.getFavourites();
     }
 
+
+    @Operation(summary = "Проверить итоговый тест")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Список избранного успешно получен",
+                    content = @Content(schema = @Schema(implementation = Long.class)))
+    })
+    @PatchMapping("/{id}/test/check")
+    public Long checkTest(@PathVariable Long id, @RequestParam List<Long> answerIds) {
+        return courseService.checkTest(id, answerIds);
+    }
 }
