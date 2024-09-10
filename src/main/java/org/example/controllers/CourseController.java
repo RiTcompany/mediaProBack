@@ -86,7 +86,7 @@ public class CourseController {
     @Operation(summary = "Проверить итоговый тест")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Список избранного успешно получен",
-                    content = @Content(schema = @Schema(implementation = Long.class)))
+                    content = @Content(schema = @Schema(implementation = TestResultDto.class)))
     })
     @PatchMapping("/{id}/test/check")
     public TestResultDto checkTest(@PathVariable Long id, @RequestParam List<Long> answerIds) {
