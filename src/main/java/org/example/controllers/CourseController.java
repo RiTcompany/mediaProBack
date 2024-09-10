@@ -12,6 +12,7 @@ import org.example.exceptions.ResourceNotFoundException;
 import org.example.pojo.CourseDto;
 import org.example.pojo.FavouritesDto;
 import org.example.pojo.TestDto;
+import org.example.pojo.TestResultDto;
 import org.example.services.impl.CourseServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
@@ -88,7 +89,7 @@ public class CourseController {
                     content = @Content(schema = @Schema(implementation = Long.class)))
     })
     @PatchMapping("/{id}/test/check")
-    public Long checkTest(@PathVariable Long id, @RequestParam List<Long> answerIds) {
+    public TestResultDto checkTest(@PathVariable Long id, @RequestParam List<Long> answerIds) {
         return courseService.checkTest(id, answerIds);
     }
 }

@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.entities.*;
 import org.example.exceptions.ResourceNotFoundException;
-import org.example.pojo.CourseDto;
-import org.example.pojo.FavouritesDto;
-import org.example.pojo.LessonDto;
-import org.example.pojo.TestDto;
+import org.example.pojo.*;
 import org.example.repositories.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -124,18 +121,24 @@ public class CourseServiceImpl {
                 .favouriteLessons(lessonRepository.findAllByIsFavouriteTrue().stream().map(Lesson::getId).toList()).build();
     }
 
-    public Long checkTest(Long id, List<Long> answerIds) {
-        String trueAnswers = testRepository.findByCourseId(id).getTrueAnswers();
+    public TestResultDto checkTest(Long id, List<Long> answerIds) {
+        Test test = testRepository.findByCourseId(id);
+        String trueAnswers = test.getTrueAnswers();
         List<Long> trueAnswerIds = Arrays.stream(trueAnswers.split(","))
                 .map(String::trim)
                 .map(Long::valueOf)
                 .toList();
-        Long trueAnswersNumber = 0L;
+        int trueAnswersNumber = 0;
         for (int i = 0; i < answerIds.size(); i++) {
             if (trueAnswerIds.get(i).equals(answerIds.get(i))) {
                 trueAnswersNumber++;
             }
         }
-        return trueAnswersNumber;
+        return TestResultDto.builder()
+                .testId(test.getId())
+                .testName(test.getName())
+                .trueAnswersCount(trueAnswersNumber)
+                .passed(trueAnswersNumber == trueAnswerIds.size())
+                .resultAnswer(trueAnswersNumber == trueAnswerIds.size() ? "Поздравляю вы сдали тест" : null).build();
     }
 }
