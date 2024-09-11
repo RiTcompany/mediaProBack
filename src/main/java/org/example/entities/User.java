@@ -38,6 +38,9 @@ public class User implements UserDetails {
     @Column(name = "is_subscribed_to_news", nullable = false)
     private Boolean newsSubscribed;
 
+    @Column(name = "is_confirmed", nullable = false)
+    private Boolean isConfirmed;
+
     public User(String email, String username, String password, ERole role, Boolean newsSubscribed) {
         super();
         this.email = email;

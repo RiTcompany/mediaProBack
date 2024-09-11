@@ -8,6 +8,7 @@ import org.example.enums.ERole;
 import org.example.exceptions.EmailPinNotFoundException;
 import org.example.exceptions.InvalidPasswordException;
 import org.example.exceptions.InvalidPinException;
+import org.example.exceptions.UserIsNotConfirmedByEmailException;
 import org.example.pojo.*;
 import org.example.repositories.EmailsPinsRepository;
 import org.example.repositories.UserRepository;
@@ -37,16 +38,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtAuthenticationResponse signUp(SignUpRequest request) {
+        Optional<User> userOp = userRepository.findByEmailAndIsConfirmedFalse(request.getEmail());
+        User user;
+        if (userOp.isPresent()) {
+            user = userOp.get();
+        } else {
+            user = User.builder()
+                    .email(request.getEmail())
+                    .username(request.getName())
+                    .password(passwordEncoder.encode(request
+                            .getPassword())).role(ERole.ROLE_FREE)
+                    .newsSubscribed(request.getNewsSubscribed())
+                    .isConfirmed(false)
+                    .build();
 
-        User user = User.builder()
-                .email(request.getEmail())
-                .username(request.getName())
-                .password(passwordEncoder.encode(request
-                        .getPassword())).role(ERole.ROLE_FREE)
-                .newsSubscribed(request.getNewsSubscribed())
-                .build();
-
-        userService.create(user);
+            userService.create(user);
+        }
 
         sendValidationMsgToEmail(user.getEmail());
 
@@ -59,6 +66,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public JwtAuthenticationResponse signIn(SignInRequest request) {
         User user = userRepository.findByEmail(request.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not fount by username: " + request.getUsername()));
+
+        if (user.getIsConfirmed().equals(false)) throw new UserIsNotConfirmedByEmailException(user.getEmail());
+
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             UserDetails userDetails = userService
                     .userDetailsService()
@@ -92,6 +102,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             emailsPinsRepository.delete(emailPin);
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException(email));
+            user.setIsConfirmed(true);
             userRepository.save(user);
         } else throw new InvalidPinException(pin);
     }
