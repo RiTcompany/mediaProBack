@@ -25,12 +25,6 @@ public class Course {
 
     private String duration;
 
-    private Boolean isFavourite;
-
-    private LocalDateTime favouriteSetTime;
-
-    private Boolean isStarted;
-
     private LocalDateTime startTime;
 
     @OneToOne

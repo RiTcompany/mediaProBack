@@ -19,6 +19,7 @@ public class CourseDto {
     private Date favouriteSetTime;
     private Date startTime;
     private Boolean isStarted;
+    private Boolean isTestPassed;
     private Boolean isAvailable;
     private EAccess accessLevel;
     private List<LessonDto> lessons;

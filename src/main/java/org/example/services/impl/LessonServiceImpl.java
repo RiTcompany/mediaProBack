@@ -1,13 +1,12 @@
 package org.example.services.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.entities.EAccess;
-import org.example.entities.Lesson;
-import org.example.entities.User;
+import org.example.entities.*;
 import org.example.exceptions.HaveNoAccessLevelException;
 import org.example.exceptions.ResourceNotFoundException;
 import org.example.pojo.LessonFullDto;
 import org.example.repositories.LessonRepository;
+import org.example.repositories.UserLessonRepository;
 import org.example.repositories.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,28 +20,39 @@ public class LessonServiceImpl {
 
     private final LessonRepository lessonRepository;
     private final UserRepository userRepository;
+    private final UserLessonRepository userLessonRepository;
 
     public LessonFullDto getLesson(Long lessonId) {
-        return toDto(lessonRepository.findById(lessonId)
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
+        return toDto(userLesson, lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new ResourceNotFoundException("Lesson not found")));
     }
 
     public Long setFavourite(Long lessonId, boolean isFavourite) {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
-        lesson.setIsFavourite(isFavourite);
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
+        userLesson.setIsFavourite(isFavourite);
         if (isFavourite) {
-            lesson.setFavouriteSetTime(LocalDateTime.now());
+            userLesson.setFavouriteSetTime(LocalDateTime.now());
         }
-        return lessonRepository.save(lesson).getId();
+        return userLessonRepository.save(userLesson).getId();
     }
 
     public LessonFullDto setComplete(Long lessonId, boolean isComplete) {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
-        lesson.setIsCompleted(isComplete);
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
+        userLesson.setIsCompleted(isComplete);
         if (isComplete) {
-            lesson.setCompletedSetTime(LocalDateTime.now());
+            userLesson.setCompletedSetTime(LocalDateTime.now());
         }
-        return toDto(lessonRepository.save(lesson));
+        return toDto(userLessonRepository.save(userLesson), lesson);
     }
 
     public String getPracticeTask(Long id) {
@@ -54,15 +64,15 @@ public class LessonServiceImpl {
         } else throw new HaveNoAccessLevelException(role);
     }
 
-    public static LessonFullDto toDto(Lesson lesson) {
+    public static LessonFullDto toDto(UserLesson userLesson, Lesson lesson) {
         if (lesson == null) {
             return null;
         }
 
         return new LessonFullDto(lesson.getId(), lesson.getCourse() != null ? lesson.getCourse().getId() : null,
                 lesson.getName(), lesson.getDescription(), lesson.getContent(), lesson.getPracticeTask(), lesson.getVideoUrl(),
-                lesson.getDuration(), lesson.getIsCompleted(), lesson.getCompletedSetTime(), lesson.getAccessLevel(),
-                lesson.getIsFavourite(), lesson.getFavouriteSetTime(), lesson.getTags());
+                lesson.getDuration(), userLesson.getIsCompleted(), userLesson.getCompletedSetTime(), lesson.getAccessLevel(),
+                userLesson.getIsFavourite(), userLesson.getFavouriteSetTime(), lesson.getTags());
     }
 
 }

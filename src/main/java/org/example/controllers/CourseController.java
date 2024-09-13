@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.example.entities.Course;
 import org.example.entities.Test;
 import org.example.exceptions.ResourceNotFoundException;
 import org.example.pojo.CourseDto;
@@ -38,12 +37,12 @@ public class CourseController {
     @Operation(summary = "Установить/снять флаг избранного для курса")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Флаг избранного успешно обновлен",
-                    content = @Content(schema = @Schema(implementation = Course.class))),
+                    content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "404", description = "Курс не найден",
                     content = @Content(schema = @Schema(implementation = ResourceNotFoundException.class)))
     })
     @PostMapping("/{id}/favourite")
-    public Course setFavourite(@PathVariable Long id, @RequestParam boolean isFavourite) {
+    public Long setFavourite(@PathVariable Long id, @RequestParam boolean isFavourite) {
         return courseService.setFavourite(id, isFavourite);
     }
 
@@ -51,13 +50,27 @@ public class CourseController {
     @Deprecated
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Флаг завершенности успешно обновлен",
-                    content = @Content(schema = @Schema(implementation = Course.class))),
+                    content = @Content(schema = @Schema(implementation = Long.class))),
             @ApiResponse(responseCode = "404", description = "Курс не найден",
                     content = @Content(schema = @Schema(implementation = ResourceNotFoundException.class)))
     })
     @PostMapping("/{id}/complete")
-    public Course setComplete(@PathVariable Long id, @RequestParam boolean isComplete) {
+    public Long setComplete(@PathVariable Long id, @RequestParam boolean isComplete) {
         return courseService.setComplete(id, isComplete);
+    }
+
+
+    @Operation(summary = "Установить/снять флаг старта курса")
+    @Deprecated
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Флаг старта успешно обновлен",
+                    content = @Content(schema = @Schema(implementation = Long.class))),
+            @ApiResponse(responseCode = "404", description = "Курс не найден",
+                    content = @Content(schema = @Schema(implementation = ResourceNotFoundException.class)))
+    })
+    @PostMapping("/{id}/start")
+    public Long setStart(@PathVariable Long id, @RequestParam boolean isStart) {
+        return courseService.setStarted(id, isStart);
     }
 
 

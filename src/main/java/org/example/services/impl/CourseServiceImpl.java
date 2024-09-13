@@ -24,6 +24,8 @@ public class CourseServiceImpl {
     private final UserRepository userRepository;
     private final TestRepository testRepository;
     private final LessonRepository lessonRepository;
+    private final UserCourseRepository userCourseRepository;
+    private final UserLessonRepository userLessonRepository;
 
     public List<CourseDto> getAllCourses() {
         List<Course> courses = courseRepository.findAll();
@@ -34,7 +36,7 @@ public class CourseServiceImpl {
     private CourseDto convertToCourseDto(Course course) {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
         List<LessonDto> lessonDtos = course.getLessons().stream()
                 .map(this::convertToLessonDto)
                 .collect(Collectors.toList());
@@ -56,8 +58,9 @@ public class CourseServiceImpl {
                 .description(course.getDescription())
                 .urlImg(course.getUrlImg())
                 .duration(course.getDuration())
-                .isFavourite(course.getIsFavourite())
-                .isStarted(course.getIsStarted())
+                .isFavourite(userCourse.getIsFavourite())
+                .isStarted(userCourse.getIsStarted())
+                .isTestPassed(userCourse.getIsTestPassed())
                 .isAvailable(isAvailable)
                 .accessLevel(course.getAccessLevel())
                 .lessons(lessonDtos)
@@ -67,7 +70,7 @@ public class CourseServiceImpl {
     private LessonDto convertToLessonDto(Lesson lesson) {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-
+        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
         String role = user.getRole().name().substring(5);
         String accessLevel = lesson.getAccessLevel().name();
         boolean isAvailable;
@@ -84,29 +87,47 @@ public class CourseServiceImpl {
                 .name(lesson.getName())
                 .duration(lesson.getDuration())
                 .description(lesson.getDescription())
-                .isCompleted(lesson.getIsCompleted())
+                .isCompleted(userLesson.getIsCompleted())
                 .isAvailable(isAvailable)
                 .accessLevel(lesson.getAccessLevel().name())
-                .isFavourite(lesson.getIsFavourite())
+                .isFavourite(userLesson.getIsFavourite())
                 .build();
     }
 
-    public Course setFavourite(Long courseId, boolean isFavourite) {
+    public Long setFavourite(Long courseId, boolean isFavourite) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-        course.setIsFavourite(isFavourite);
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+        userCourse.setIsFavourite(isFavourite);
         if (isFavourite) {
-            course.setFavouriteSetTime(LocalDateTime.now());
+            userCourse.setFavouriteSetTime(LocalDateTime.now());
         }
-        return courseRepository.save(course);
+        return userCourseRepository.save(userCourse).getCourse().getId();
     }
 
-    public Course setComplete(Long courseId, boolean isComplete) {
+    public Long setComplete(Long courseId, boolean isComplete) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
-        course.setIsStarted(isComplete);
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+        userCourse.setIsCompleted(isComplete);
         if (isComplete) {
-            course.setStartTime(LocalDateTime.now());
+            userCourse.setCompletedSetTime(LocalDateTime.now());
         }
-        return courseRepository.save(course);
+        return userCourseRepository.save(userCourse).getCourse().getId();
+    }
+
+    public Long setStarted(Long courseId, boolean isStarted) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+        userCourse.setIsStarted(isStarted);
+        if (isStarted) {
+            userCourse.setStartTime(LocalDateTime.now());
+        }
+        return userCourseRepository.save(userCourse).getCourse().getId();
     }
 
     public TestDto getCourseTest(Long id) {
@@ -117,11 +138,15 @@ public class CourseServiceImpl {
 
     public FavouritesDto getFavourites() {
         return FavouritesDto.builder()
-                .favouriteCourses(courseRepository.findAllByIsFavouriteTrue().stream().map(Course::getId).toList())
-                .favouriteLessons(lessonRepository.findAllByIsFavouriteTrue().stream().map(Lesson::getId).toList()).build();
+                .favouriteCourses(userCourseRepository.findAllByIsFavouriteTrue().stream().map(UserCourse::getCourse).map(Course::getId).toList())
+                .favouriteLessons(userLessonRepository.findAllByIsFavouriteTrue().stream().map(UserLesson::getLesson).map(Lesson::getId).toList()).build();
     }
 
     public TestResultDto checkTest(Long id, List<Long> answerIds) {
+        Course course = courseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
         Test test = testRepository.findByCourseId(id);
         String trueAnswers = test.getTrueAnswers();
         List<Long> trueAnswerIds = Arrays.stream(trueAnswers.split(","))
@@ -133,6 +158,13 @@ public class CourseServiceImpl {
             if (trueAnswerIds.get(i).equals(answerIds.get(i))) {
                 trueAnswersNumber++;
             }
+        }
+
+        boolean testPassed = trueAnswersNumber == answerIds.size();
+
+        if (testPassed) {
+            userCourse.setIsTestPassed(true);
+            userCourseRepository.save(userCourse);
         }
         return TestResultDto.builder()
                 .testId(test.getId())
