@@ -44,4 +44,9 @@ public class UserCourse {
 
     @Column(name = "is_test_passed")
     private Boolean isTestPassed;
+
+    public UserCourse(Course course, User user) {
+        this.course = course;
+        this.user = user;
+    }
 }

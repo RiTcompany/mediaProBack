@@ -35,5 +35,10 @@ public class UserLesson {
 
     @Column(name = "completed_set_time")
     private LocalDateTime completedSetTime;
+
+    public UserLesson(Lesson lesson, User user) {
+        this.lesson = lesson;
+        this.user = user;
+    }
 }
 
