@@ -37,6 +37,7 @@ public class JwtServiceImpl implements org.example.services.JwtService {
             claims.put("id", customUserDetails.getId());
             claims.put("email", customUserDetails.getEmail());
             claims.put("role", customUserDetails.getRole());
+            claims.put("name", customUserDetails.getUsername());
         }
         return generateToken(claims, userDetails);
     }
