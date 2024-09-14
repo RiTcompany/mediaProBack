@@ -62,20 +62,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public JwtAuthenticationResponse signIn(SignInRequest request) {
-        User user = userRepository.findByEmail(request.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not fount by username: " + request.getUsername()));
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User not fount by username: " + request.getEmail()));
 
         if (user.getIsConfirmed().equals(false)) throw new UserIsNotConfirmedByEmailException(user.getEmail());
 
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             UserDetails userDetails = userService
                     .userDetailsService()
-                    .loadUserByUsername(request.getUsername());
+                    .loadUserByUsername(request.getEmail());
 
             var jwt = jwtService.generateToken(userDetails);
             return new JwtAuthenticationResponse(jwt);
         } else {
-            throw new InvalidPasswordException(request.getUsername());
+            throw new InvalidPasswordException(request.getEmail());
         }
     }
 
