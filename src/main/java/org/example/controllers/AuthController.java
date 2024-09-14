@@ -111,6 +111,6 @@ public class AuthController {
     })
     @PatchMapping("/restore")
     public ResponseEntity<Long> changeForgottenPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
-        return ResponseEntity.ok(authenticationService.changeForgottenPassword(forgotPasswordRequest));
+        return ResponseEntity.ok(authenticationService. changeForgottenPassword(forgotPasswordRequest));
     }
 }

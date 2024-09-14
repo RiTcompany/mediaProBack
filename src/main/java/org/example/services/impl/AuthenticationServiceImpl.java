@@ -136,16 +136,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Long changeForgottenPassword(ForgotPasswordRequest forgotPasswordRequest) {
-        Long pin = forgotPasswordRequest.getPin();
-        EmailPin emailPin = emailsPinsRepository.findByEmail(forgotPasswordRequest.getEmail())
-                .orElseThrow(() -> new EmailPinNotFoundException(forgotPasswordRequest.getEmail()));
-        if (emailPin.getPin() == pin) {
-            emailsPinsRepository.delete(emailPin);
-            User user = userRepository.findByEmail(forgotPasswordRequest.getEmail())
-                    .orElseThrow(() -> new UsernameNotFoundException(forgotPasswordRequest.getEmail()));
-            user.setPassword(passwordEncoder.encode(forgotPasswordRequest.getPassword()));
-            return userRepository.save(user).getId();
-        } else throw new InvalidPinException(pin);
-
+        User user = userRepository.findByEmail(forgotPasswordRequest.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException(forgotPasswordRequest.getEmail()));
+        user.setPassword(passwordEncoder.encode(forgotPasswordRequest.getPassword()));
+        return userRepository.save(user).getId();
     }
 }
