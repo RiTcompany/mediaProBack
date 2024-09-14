@@ -49,13 +49,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .password(passwordEncoder.encode(request
                             .getPassword())).role(ERole.ROLE_FREE)
                     .newsSubscribed(request.getNewsSubscribed())
-                    .isConfirmed(false)
+                    .isConfirmed(true)
                     .build();
 
             userService.create(user);
         }
-
-        sendValidationMsgToEmail(user.getEmail());
 
         var jwt = jwtService.generateToken(user);
         return new JwtAuthenticationResponse(jwt);
@@ -100,16 +98,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .orElseThrow(() -> new EmailPinNotFoundException(email));
         if (emailPin.getPin() == pin) {
             emailsPinsRepository.delete(emailPin);
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new UsernameNotFoundException(email));
-            user.setIsConfirmed(true);
-            userRepository.save(user);
         } else throw new InvalidPinException(pin);
     }
 
     @Override
     public Boolean doesUserAlreadyExist(String email) {
-        return userRepository.existsByUsername(email);
+        if (!userRepository.existsByUsernameAndIsConfirmedTrue(email)) {
+            sendValidationMsgToEmail(email);
+        }
+        return userRepository.existsByUsernameAndIsConfirmedTrue(email);
     }
 
     @Override
