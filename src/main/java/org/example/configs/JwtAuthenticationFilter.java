@@ -39,10 +39,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         var jwt = authHeader.substring(BEARER_PREFIX.length());
-        var username = jwtService.extractUserName(jwt);
-        if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
+        var email = jwtService.extractUserName(jwt);
+        if (StringUtils.isNotEmpty(email) && SecurityContextHolder.getContext().getAuthentication() == null) {
             User userDetails = userService
-                    .getByUsername(username);
+                    .getByUsername(email);
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
