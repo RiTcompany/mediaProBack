@@ -39,6 +39,10 @@ public class UserLesson {
     public UserLesson(Lesson lesson, User user) {
         this.lesson = lesson;
         this.user = user;
+        this.isFavourite = false;
+        this.favouriteSetTime = LocalDateTime.now();
+        this.isCompleted = false;
+        this.completedSetTime = LocalDateTime.now();
     }
 }
 

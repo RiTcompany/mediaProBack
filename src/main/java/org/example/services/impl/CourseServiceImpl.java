@@ -35,7 +35,8 @@ public class CourseServiceImpl {
     private CourseDto convertToCourseDto(Course course) {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElse(userCourseRepository.save(new UserCourse(course, user)));        List<LessonDto> lessonDtos = course.getLessons().stream()
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElse(userCourseRepository.save(new UserCourse(course, user)));
+        List<LessonDto> lessonDtos = course.getLessons().stream()
                 .map(this::convertToLessonDto)
                 .collect(Collectors.toList());
 
@@ -97,7 +98,7 @@ public class CourseServiceImpl {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElse(userCourseRepository.save(new UserCourse(course, user)));        List<LessonDto> lessonDtos = course.getLessons().stream()
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElse(userCourseRepository.save(new UserCourse(course, user)));
         userCourse.setIsFavourite(isFavourite);
         if (isFavourite) {
             userCourse.setFavouriteSetTime(LocalDateTime.now());
@@ -121,7 +122,7 @@ public class CourseServiceImpl {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElse(userCourseRepository.save(new UserCourse(course, user)));        List<LessonDto> lessonDtos = course.getLessons().stream()
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElse(userCourseRepository.save(new UserCourse(course, user)));
         userCourse.setIsStarted(isStarted);
         if (isStarted) {
             userCourse.setStartTime(LocalDateTime.now());
@@ -145,7 +146,7 @@ public class CourseServiceImpl {
         Course course = courseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElse(userCourseRepository.save(new UserCourse(course, user)));        List<LessonDto> lessonDtos = course.getLessons().stream()
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElse(userCourseRepository.save(new UserCourse(course, user)));
         Test test = testRepository.findByCourseId(id);
         String trueAnswers = test.getTrueAnswers();
         List<Long> trueAnswerIds = Arrays.stream(trueAnswers.split(","))

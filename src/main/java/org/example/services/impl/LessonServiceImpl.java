@@ -26,7 +26,7 @@ public class LessonServiceImpl {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson).orElse(new UserLesson(lesson, user));
+        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson).orElse(userLessonRepository.save(new UserLesson(lesson, user)));
         return toDto(userLesson, lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new ResourceNotFoundException("Lesson not found")));
     }
@@ -35,7 +35,7 @@ public class LessonServiceImpl {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson).orElse(new UserLesson(lesson, user));
+        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson).orElse(userLessonRepository.save(new UserLesson(lesson, user)));
         userLesson.setIsFavourite(isFavourite);
         if (isFavourite) {
             userLesson.setFavouriteSetTime(LocalDateTime.now());
@@ -47,7 +47,7 @@ public class LessonServiceImpl {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson).orElse(new UserLesson(lesson, user));
+        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson).orElse(userLessonRepository.save(new UserLesson(lesson, user)));
         userLesson.setIsCompleted(isComplete);
         if (isComplete) {
             userLesson.setCompletedSetTime(LocalDateTime.now());
