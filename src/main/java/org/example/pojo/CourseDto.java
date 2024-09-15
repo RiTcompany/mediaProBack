@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.example.entities.EAccess;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -16,8 +17,8 @@ public class CourseDto {
     private String urlImg;
     private String duration;
     private Boolean isFavourite;
-    private Date favouriteSetTime;
-    private Date startTime;
+    private LocalDateTime favouriteSetTime;
+    private LocalDateTime startTime;
     private Boolean isStarted;
     private Boolean isTestPassed;
     private Boolean isAvailable;

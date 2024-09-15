@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,6 +59,8 @@ public class CourseServiceImpl {
                 .urlImg(course.getUrlImg())
                 .duration(course.getDuration())
                 .isFavourite(userCourse.getIsFavourite() != null ? userCourse.getIsFavourite() : false)
+                .favouriteSetTime(userCourse.getFavouriteSetTime())
+                .startTime(LocalDateTime.now())
                 .isStarted(userCourse.getIsStarted() != null ? userCourse.getIsStarted() : false)
                 .isTestPassed(userCourse.getIsTestPassed() != null ? userCourse.getIsTestPassed() : false)
                 .isAvailable(isAvailable)
@@ -91,6 +94,7 @@ public class CourseServiceImpl {
                 .accessLevel(lesson.getAccessLevel().name())
                 .isFavourite(userLesson.getIsFavourite() != null ? userLesson.getIsFavourite() : false)
                 .tags(lesson.getTags())
+                .favouriteSetTime(userLesson.getFavouriteSetTime())
                 .build();
     }
 
