@@ -35,9 +35,9 @@ public class JwtServiceImpl implements org.example.services.JwtService {
         Map<String, Object> claims = new HashMap<>();
         if (userDetails instanceof User customUserDetails) {
             claims.put("id", customUserDetails.getId());
-            claims.put("email", customUserDetails.getEmail());
+            claims.put("name", customUserDetails.getName());
             claims.put("role", customUserDetails.getRole());
-            claims.put("name", customUserDetails.getUsername());
+            claims.put("email", customUserDetails.getUsername());
         }
         return generateToken(claims, userDetails.getUsername());
     }

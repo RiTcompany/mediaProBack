@@ -56,9 +56,9 @@ public class CourseServiceImpl {
                 .description(course.getDescription())
                 .urlImg(course.getUrlImg())
                 .duration(course.getDuration())
-                .isFavourite(userCourse.getIsFavourite())
-                .isStarted(userCourse.getIsStarted())
-                .isTestPassed(userCourse.getIsTestPassed())
+                .isFavourite(userCourse.getIsFavourite() != null ? userCourse.getIsFavourite() : false)
+                .isStarted(userCourse.getIsStarted() != null ? userCourse.getIsStarted() : false)
+                .isTestPassed(userCourse.getIsTestPassed() != null ? userCourse.getIsTestPassed() : false)
                 .isAvailable(isAvailable)
                 .accessLevel(course.getAccessLevel())
                 .lessons(lessonDtos)
@@ -85,10 +85,10 @@ public class CourseServiceImpl {
                 .name(lesson.getName())
                 .duration(lesson.getDuration())
                 .description(lesson.getDescription())
-                .isCompleted(userLesson.getIsCompleted())
+                .isCompleted(userLesson.getIsCompleted() != null ? userLesson.getIsCompleted() : false )
                 .isAvailable(isAvailable)
                 .accessLevel(lesson.getAccessLevel().name())
-                .isFavourite(userLesson.getIsFavourite())
+                .isFavourite(userLesson.getIsFavourite() != null ? userLesson.getIsFavourite() : false)
                 .build();
     }
 
