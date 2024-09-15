@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,7 +36,7 @@ public class CourseServiceImpl {
     private CourseDto convertToCourseDto(Course course) {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElse(userCourseRepository.save(new UserCourse(course, user)));
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElseGet(() -> userCourseRepository.save(new UserCourse(course, user)));
         List<LessonDto> lessonDtos = course.getLessons().stream()
                 .map(this::convertToLessonDto)
                 .collect(Collectors.toList());
@@ -72,7 +72,7 @@ public class CourseServiceImpl {
     private LessonDto convertToLessonDto(Lesson lesson) {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson).orElse(userLessonRepository.save(new UserLesson(lesson, user)));
+        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson).orElseGet(() -> userLessonRepository.save(new UserLesson(lesson, user)));
         String role = user.getRole().name().substring(5);
         String accessLevel = lesson.getAccessLevel().name();
         boolean isAvailable;
@@ -89,7 +89,7 @@ public class CourseServiceImpl {
                 .name(lesson.getName())
                 .duration(lesson.getDuration())
                 .description(lesson.getDescription())
-                .isCompleted(userLesson.getIsCompleted() != null ? userLesson.getIsCompleted() : false )
+                .isCompleted(userLesson.getIsCompleted() != null ? userLesson.getIsCompleted() : false)
                 .isAvailable(isAvailable)
                 .accessLevel(lesson.getAccessLevel().name())
                 .isFavourite(userLesson.getIsFavourite() != null ? userLesson.getIsFavourite() : false)
@@ -102,7 +102,7 @@ public class CourseServiceImpl {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElse(userCourseRepository.save(new UserCourse(course, user)));
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElseGet(() -> userCourseRepository.save(new UserCourse(course, user)));
         userCourse.setIsFavourite(isFavourite);
         if (isFavourite) {
             userCourse.setFavouriteSetTime(LocalDateTime.now());
@@ -114,7 +114,7 @@ public class CourseServiceImpl {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElse(new UserCourse(course, user));
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElseGet(() -> userCourseRepository.save(new UserCourse(course, user)));
         userCourse.setIsCompleted(isComplete);
         if (isComplete) {
             userCourse.setCompletedSetTime(LocalDateTime.now());
@@ -126,7 +126,7 @@ public class CourseServiceImpl {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElse(userCourseRepository.save(new UserCourse(course, user)));
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElseGet(() -> userCourseRepository.save(new UserCourse(course, user)));
         userCourse.setIsStarted(isStarted);
         if (isStarted) {
             userCourse.setStartTime(LocalDateTime.now());
@@ -150,7 +150,7 @@ public class CourseServiceImpl {
         Course course = courseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Course not found"));
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElse(userCourseRepository.save(new UserCourse(course, user)));
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, course).orElseGet(() -> userCourseRepository.save(new UserCourse(course, user)));
         Test test = testRepository.findByCourseId(id);
         String trueAnswers = test.getTrueAnswers();
         List<Long> trueAnswerIds = Arrays.stream(trueAnswers.split(","))
