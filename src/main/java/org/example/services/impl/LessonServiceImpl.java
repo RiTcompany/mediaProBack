@@ -64,7 +64,21 @@ public class LessonServiceImpl {
         } else throw new HaveNoAccessLevelException(role);
     }
 
-    public static LessonFullDto toDto(UserLesson userLesson, Lesson lesson) {
+    public LessonFullDto toDto(UserLesson userLesson, Lesson lesson) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+
+        String role = user.getRole().name().substring(5);
+        String accessLevel = lesson.getAccessLevel().name();
+        boolean isAvailable;
+        if (role.equals(EAccess.PRO.name())) {
+            isAvailable = true;
+        } else if (role.equals(EAccess.STANDARD.name())) {
+            isAvailable = !accessLevel.equals(EAccess.PRO.name());
+        } else {
+            isAvailable = accessLevel.equals(EAccess.FREE.name());
+        }
+
         if (lesson == null) {
             return null;
         }
@@ -72,7 +86,7 @@ public class LessonServiceImpl {
         return new LessonFullDto(lesson.getId(), lesson.getCourse() != null ? lesson.getCourse().getId() : null,
                 lesson.getName(), lesson.getDescription(), lesson.getContent(), lesson.getPracticeTask(), lesson.getVideoUrl(),
                 lesson.getDuration(), userLesson.getIsCompleted(), userLesson.getCompletedSetTime(), lesson.getAccessLevel(),
-                userLesson.getIsFavourite(), userLesson.getFavouriteSetTime(), lesson.getTags());
+                userLesson.getIsFavourite(), isAvailable, userLesson.getFavouriteSetTime(), lesson.getTags());
     }
 
 }
