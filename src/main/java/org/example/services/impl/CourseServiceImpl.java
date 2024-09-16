@@ -137,7 +137,7 @@ public class CourseServiceImpl {
     public TestDto getCourseTest(Long id) {
         Test test = testRepository.findByCourseId(id);
         List<QuestionAnswer> qas = test.getQuestionAnswers();
-        return TestDto.builder().name(test.getName()).description(test.getDescription()).courseId(id).questionAnswers(qas).build();
+        return TestDto.builder().testId(test.getId()).name(test.getName()).description(test.getDescription()).courseId(id).questionAnswers(qas).build();
     }
 
     public FavouritesDto getFavourites() {

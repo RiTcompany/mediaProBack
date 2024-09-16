@@ -6,6 +6,7 @@ import org.example.exceptions.HaveNoAccessLevelException;
 import org.example.exceptions.ResourceNotFoundException;
 import org.example.pojo.LessonFullDto;
 import org.example.repositories.LessonRepository;
+import org.example.repositories.UserCourseRepository;
 import org.example.repositories.UserLessonRepository;
 import org.example.repositories.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,7 +22,8 @@ public class LessonServiceImpl {
     private final LessonRepository lessonRepository;
     private final UserRepository userRepository;
     private final UserLessonRepository userLessonRepository;
-
+    private final UserCourseRepository userCourseRepository;
+ 
     public LessonFullDto getLesson(Long lessonId) {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
@@ -47,11 +49,16 @@ public class LessonServiceImpl {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson).orElseGet(() -> userLessonRepository.save(new UserLesson(lesson, user)));
+        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson)
+                .orElseGet(() -> userLessonRepository.save(new UserLesson(lesson, user)));
+        UserCourse userCourse = userCourseRepository.findByUserAndCourse(user, lesson.getCourse())
+                .orElseGet(() -> userCourseRepository.save(new UserCourse(lesson.getCourse(), user)));
+        userCourse.setIsStarted(true);
         userLesson.setIsCompleted(isComplete);
         if (isComplete) {
             userLesson.setCompletedSetTime(LocalDateTime.now());
         }
+        userCourseRepository.save(userCourse);
         return toDto(userLessonRepository.save(userLesson), lesson);
     }
 
