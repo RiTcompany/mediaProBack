@@ -1,6 +1,5 @@
 package org.example.repositories;
 
-import lombok.Value;
 import org.example.entities.Course;
 import org.example.entities.User;
 import org.example.entities.UserCourse;
@@ -13,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface UserCourseRepository extends JpaRepository<UserCourse, Long> {
 
-    List<UserCourse> findAllByIsFavouriteTrue();
+    List<UserCourse> findAllByUserAndIsFavouriteTrue(User currentUser);
 
     Optional<UserCourse> findByUserAndCourse(User user, Course course);
 }

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -141,9 +140,11 @@ public class CourseServiceImpl {
     }
 
     public FavouritesDto getFavourites() {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
         return FavouritesDto.builder()
-                .favouriteCourses(userCourseRepository.findAllByIsFavouriteTrue().stream().map(UserCourse::getCourse).map(Course::getId).toList())
-                .favouriteLessons(userLessonRepository.findAllByIsFavouriteTrue().stream().map(UserLesson::getLesson).map(Lesson::getId).toList()).build();
+                .favouriteCourses(userCourseRepository.findAllByUserAndIsFavouriteTrue(user).stream().map(UserCourse::getCourse).map(Course::getId).toList())
+                .favouriteLessons(userLessonRepository.findAllByUserAndIsFavouriteTrue(user).stream().map(UserLesson::getLesson).map(Lesson::getId).toList()).build();
     }
 
     public TestResultDto checkTest(Long id, List<Long> answerIds) {

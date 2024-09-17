@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserLessonRepository extends JpaRepository<UserLesson, Long> {
-    List<UserLesson> findAllByIsFavouriteTrue();
+    List<UserLesson> findAllByUserAndIsFavouriteTrue(User currentUser);
 
     Optional<UserLesson> findByUserAndLesson(User user, Lesson lesson);
 }
