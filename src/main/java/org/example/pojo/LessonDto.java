@@ -2,7 +2,6 @@ package org.example.pojo;
 
 import lombok.Builder;
 import lombok.Data;
-import org.example.entities.EAccess;
 import org.example.entities.Tag;
 
 import java.time.LocalDateTime;

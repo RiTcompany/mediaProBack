@@ -1,6 +1,6 @@
 package org.example.pojo;
 
-import org.example.entities.EAccess;
+import org.example.enums.EAccess;
 import org.example.entities.Tag;
 
 import java.time.LocalDateTime;

@@ -3,8 +3,8 @@ package org.example.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.enums.EAccess;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity

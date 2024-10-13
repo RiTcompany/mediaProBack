@@ -7,7 +7,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -34,6 +36,15 @@ public class User implements UserDetails {
 
     @Column(name = "role", nullable = false)
     private ERole role;
+
+    @Column(name = "stars", nullable = false)
+    private int stars = 0;
+
+    @Column(name = "streak", nullable = false)
+    private int streak = 0;
+
+    @Column(name = "subscription_expires_at")
+    private LocalDateTime subscriptionExpiresAt;
 
     @Column(name = "is_subscribed_to_news", nullable = false)
     private Boolean newsSubscribed;
@@ -81,5 +92,15 @@ public class User implements UserDetails {
 
     public String getName() {
         return username;
+    }
+
+    public int addStreak() {
+        this.streak++;
+        return this.streak;
+    }
+
+    public int addStars() {
+        this.stars++;
+        return this.stars;
     }
 }

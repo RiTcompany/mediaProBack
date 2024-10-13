@@ -1,6 +1,6 @@
 package org.example.repositories;
 
-import org.example.entities.EmailPin;
+import org.example.enums.EmailPin;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

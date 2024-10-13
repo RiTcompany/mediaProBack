@@ -2,10 +2,9 @@ package org.example.pojo;
 
 import lombok.Builder;
 import lombok.Data;
-import org.example.entities.EAccess;
+import org.example.enums.EAccess;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Data

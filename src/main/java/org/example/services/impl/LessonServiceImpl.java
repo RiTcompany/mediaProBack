@@ -2,18 +2,21 @@ package org.example.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.entities.*;
+import org.example.enums.EAccess;
+import org.example.enums.ERole;
 import org.example.exceptions.HaveNoAccessLevelException;
 import org.example.exceptions.ResourceNotFoundException;
+import org.example.pojo.CollectStarsInfo;
 import org.example.pojo.LessonFullDto;
-import org.example.repositories.LessonRepository;
-import org.example.repositories.UserCourseRepository;
-import org.example.repositories.UserLessonRepository;
-import org.example.repositories.UserRepository;
+import org.example.pojo.SubscriptionDto;
+import org.example.repositories.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +26,8 @@ public class LessonServiceImpl {
     private final UserRepository userRepository;
     private final UserLessonRepository userLessonRepository;
     private final UserCourseRepository userCourseRepository;
- 
+    private final SubscriptionRepository subscriptionRepository;
+
     public LessonFullDto getLesson(Long lessonId) {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
@@ -96,4 +100,59 @@ public class LessonServiceImpl {
                 userLesson.getIsFavourite(), isAvailable, userLesson.getFavouriteSetTime(), lesson.getTags());
     }
 
+    public CollectStarsInfo addLessonToStreak(Long id, LocalDateTime dateTime) {
+        Lesson lesson = lessonRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+        UserLesson userLesson = userLessonRepository.findByUserAndLesson(user, lesson)
+                .orElseGet(() -> userLessonRepository.save(new UserLesson(lesson, user)));
+        userLesson.setIsCompleted(true);
+        userLesson.setCompletedSetTime(dateTime);
+        user.addStreak();
+        if (user.getStreak() == 3) {
+            user.addStars();
+            user.setStreak(0);
+        }
+        userLessonRepository.save(userLesson);
+        userRepository.save(user);
+        return CollectStarsInfo.builder()
+                .currentLessonStreak(user.getRole().equals(ERole.ROLE_FREE) ? user.getStreak() : null)
+                .targetLessonStreak(3)
+                .currentStarsCount(user.getRole().equals(ERole.ROLE_FREE) ? user.getStars() : null)
+                .targetStarsCount(21)
+                .expiresAt(user.getRole().equals(ERole.ROLE_FREE) ? user.getSubscriptionExpiresAt() : null)
+                .featureDiscount(0.1).build();
+    }
+
+    public CollectStarsInfo getStreakAndStarsInfo() {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+        return CollectStarsInfo.builder()
+                .currentLessonStreak(user.getRole().equals(ERole.ROLE_FREE) ? user.getStreak() : null)
+                .targetLessonStreak(3)
+                .currentStarsCount(user.getRole().equals(ERole.ROLE_FREE) ? user.getStars() : null)
+                .targetStarsCount(21)
+                .expiresAt(user.getRole().equals(ERole.ROLE_FREE) ? user.getSubscriptionExpiresAt() : null)
+                .featureDiscount(0.1).build();
+    }
+
+    public SubscriptionDto getCurrentSubscription() {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+        Subscription subscription = subscriptionRepository.findByName(user.getRole().name());
+        return convertSubscriptionToDto(subscription);
+    }
+
+    public List<SubscriptionDto> getAllSubscriptions() {
+        List<Subscription> subscriptions = subscriptionRepository.findAll();
+        return subscriptions.stream().map(this::convertSubscriptionToDto).collect(Collectors.toList());
+    }
+
+    private SubscriptionDto convertSubscriptionToDto(Subscription subscription) {
+        return SubscriptionDto.builder()
+                .name(subscription.getName())
+                .price(subscription.getPrice())
+                .description(subscription.getDescription()).build();
+    }
 }

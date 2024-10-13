@@ -2,7 +2,7 @@ package org.example.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.entities.EmailPin;
+import org.example.enums.EmailPin;
 import org.example.entities.User;
 import org.example.enums.ERole;
 import org.example.exceptions.EmailPinNotFoundException;
