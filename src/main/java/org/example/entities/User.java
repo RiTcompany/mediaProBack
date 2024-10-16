@@ -37,11 +37,11 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private ERole role;
 
-    @Column(name = "stars", nullable = false)
-    private int stars = 0;
+    @Column(name = "stars")
+    private Integer stars = 0;
 
-    @Column(name = "streak", nullable = false)
-    private int streak = 0;
+    @Column(name = "streak")
+    private Integer streak = 0;
 
     @Column(name = "subscription_expires_at")
     private LocalDateTime subscriptionExpiresAt;
