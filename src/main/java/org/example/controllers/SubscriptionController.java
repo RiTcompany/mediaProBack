@@ -37,7 +37,7 @@ public class SubscriptionController {
             @ApiResponse(responseCode = "200", description = "Информация успешно получена",
                     content = @Content(schema = @Schema(implementation = SubscriptionDto.class))),
     })
-    @GetMapping()
+    @GetMapping("/all")
     public List<SubscriptionDto> getAllSubscriptions() {
         return lessonService.getAllSubscriptions();
     }
