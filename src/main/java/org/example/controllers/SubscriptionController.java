@@ -8,10 +8,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.example.exceptions.ResourceNotFoundException;
 import org.example.pojo.SubscriptionDto;
+import org.example.pojo.SubscriptionsInfo;
 import org.example.services.impl.LessonServiceImpl;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,10 +34,10 @@ public class SubscriptionController {
     @Operation(summary = "Получить список подписок")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Информация успешно получена",
-                    content = @Content(schema = @Schema(implementation = SubscriptionDto.class))),
+                    content = @Content(schema = @Schema(implementation = SubscriptionsInfo.class))),
     })
     @GetMapping("/all")
-    public List<SubscriptionDto> getAllSubscriptions() {
+    public SubscriptionsInfo getAllSubscriptions() {
         return lessonService.getAllSubscriptions();
     }
 

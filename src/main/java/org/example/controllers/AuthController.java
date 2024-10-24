@@ -113,4 +113,15 @@ public class AuthController {
     public ResponseEntity<Long> changeForgottenPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         return ResponseEntity.ok(authenticationService. changeForgottenPassword(forgotPasswordRequest));
     }
+
+    @Operation(summary = "Изменение данных о пользователе")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Данные изменены"),
+            @ApiResponse(responseCode = "400", description = "Неподходящий новый Username или Email", content = @Content(schema = @Schema(implementation = InvalidPinException.class))),
+            @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content(schema = @Schema(implementation = EmailPinNotFoundException.class)))
+    })
+    @PatchMapping("/change")
+    public ResponseEntity<Long> changeUserData(@RequestBody ChangeUserDataRequest changeUserDataRequest) {
+        return ResponseEntity.ok(authenticationService.changeUserData(changeUserDataRequest));
+    }
 }

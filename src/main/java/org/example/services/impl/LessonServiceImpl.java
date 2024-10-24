@@ -9,14 +9,13 @@ import org.example.exceptions.ResourceNotFoundException;
 import org.example.pojo.CollectStarsInfo;
 import org.example.pojo.LessonFullDto;
 import org.example.pojo.SubscriptionDto;
+import org.example.pojo.SubscriptionsInfo;
 import org.example.repositories.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -141,18 +140,11 @@ public class LessonServiceImpl {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
         Subscription subscription = subscriptionRepository.findByName(user.getRole().name());
-        return convertSubscriptionToDto(subscription);
+        return SubscriptionDto.builder().expirationDate(user.getSubscriptionExpiresAt()).subscription(subscription).build();
     }
 
-    public List<SubscriptionDto> getAllSubscriptions() {
-        List<Subscription> subscriptions = subscriptionRepository.findAll();
-        return subscriptions.stream().map(this::convertSubscriptionToDto).collect(Collectors.toList());
+    public SubscriptionsInfo getAllSubscriptions() {
+        return SubscriptionsInfo.builder().subscriptions(subscriptionRepository.findAll()).discount(0.1).build();
     }
 
-    private SubscriptionDto convertSubscriptionToDto(Subscription subscription) {
-        return SubscriptionDto.builder()
-                .name(subscription.getName())
-                .price(subscription.getPrice())
-                .description(subscription.getDescription()).build();
-    }
 }

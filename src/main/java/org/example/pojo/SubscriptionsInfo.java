@@ -4,11 +4,11 @@ import lombok.Builder;
 import lombok.Value;
 import org.example.entities.Subscription;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Value
 @Builder
-public class SubscriptionDto {
-    Subscription subscription;
-    LocalDateTime expirationDate;
+public class SubscriptionsInfo {
+    List<Subscription> subscriptions;
+    double discount;
 }

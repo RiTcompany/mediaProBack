@@ -18,4 +18,6 @@ public interface AuthenticationService {
     void forgotPassword(String email);
 
     Long changeForgottenPassword(ForgotPasswordRequest forgotPasswordRequest);
+
+    Long changeUserData(ChangeUserDataRequest changeUserDataRequest);
 }

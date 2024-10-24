@@ -3,6 +3,7 @@ package org.example.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.enums.ESubscriptionType;
 
 @Entity
 @Data
@@ -14,13 +15,16 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "price", nullable = false)
+    @Column(name = "price")
     private Integer price;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "type")
+    private ESubscriptionType eSubscriptionType;
 
 }

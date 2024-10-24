@@ -16,6 +16,7 @@ import org.example.services.AuthenticationService;
 import org.example.services.EmailService;
 import org.example.services.JwtService;
 import org.example.services.UserService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -139,6 +140,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userRepository.findByEmail(forgotPasswordRequest.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException(forgotPasswordRequest.getEmail()));
         user.setPassword(passwordEncoder.encode(forgotPasswordRequest.getPassword()));
+        return userRepository.save(user).getId();
+    }
+
+    @Override
+    public Long changeUserData(ChangeUserDataRequest changeUserDataRequest) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+        user.setEmail(changeUserDataRequest.getEmail());
+        user.setUsername(changeUserDataRequest.getUsername());
         return userRepository.save(user).getId();
     }
 }
