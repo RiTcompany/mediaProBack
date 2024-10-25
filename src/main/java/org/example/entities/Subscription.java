@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.enums.ESubscriptionType;
 
+
 @Entity
 @Data
 @Table(name = "subscription")

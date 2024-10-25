@@ -4,18 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.example.entities.*;
 import org.example.enums.EAccess;
 import org.example.enums.ERole;
+import org.example.enums.ESubscriptionType;
 import org.example.exceptions.HaveNoAccessLevelException;
 import org.example.exceptions.ResourceNotFoundException;
-import org.example.pojo.CollectStarsInfo;
-import org.example.pojo.LessonFullDto;
-import org.example.pojo.SubscriptionDto;
-import org.example.pojo.SubscriptionsInfo;
+import org.example.pojo.*;
 import org.example.repositories.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +26,7 @@ public class LessonServiceImpl {
     private final UserLessonRepository userLessonRepository;
     private final UserCourseRepository userCourseRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final SubscriptionBenefitRepository subscriptionBenefitRepository;
 
     public LessonFullDto getLesson(Long lessonId) {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
@@ -136,15 +137,49 @@ public class LessonServiceImpl {
                 .featureDiscount(0.1).build();
     }
 
-    public SubscriptionDto getCurrentSubscription() {
+    public SubscriptionResponse getCurrentSubscription() {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
         Subscription subscription = subscriptionRepository.findByName(user.getRole().name());
-        return SubscriptionDto.builder().expirationDate(user.getSubscriptionExpiresAt()).subscription(subscription).build();
+        return SubscriptionResponse.builder()
+                .expirationDate(user.getSubscriptionExpiresAt())
+                .subscription(convertSubscriptionToDto(subscription))
+                .build();
     }
 
     public SubscriptionsInfo getAllSubscriptions() {
-        return SubscriptionsInfo.builder().subscriptions(subscriptionRepository.findAll()).discount(0.1).build();
+        return SubscriptionsInfo.builder().subscriptions(subscriptionRepository.findAll().stream().map(this::convertSubscriptionToDto).toList()).discount(0.1).build();
+    }
+
+    private SubscriptionDto convertSubscriptionToDto(Subscription subscription) {
+        List<SubscriptionBenefit> benefits = subscriptionBenefitRepository.findAll();
+        List<SubscriptionBenefitDto> benefitDtos = benefits.stream()
+                .map(benefit -> convertBenefitToDto(benefit, subscription.getESubscriptionType()))
+                .toList();
+        return SubscriptionDto.builder()
+                .id(subscription.getId())
+                .name(subscription.getName())
+                .price(subscription.getPrice())
+                .description(subscription.getDescription())
+                .eSubscriptionType(subscription.getESubscriptionType())
+                .benefits(benefitDtos)
+                .build();
+    }
+
+    private SubscriptionBenefitDto convertBenefitToDto(SubscriptionBenefit subscriptionBenefit, ESubscriptionType currentType) {
+        boolean isAvailable;
+        if (currentType.equals(ESubscriptionType.PRO)) {
+            isAvailable = true;
+        } else if (currentType.equals(ESubscriptionType.STANDARD)) {
+            isAvailable = !subscriptionBenefit.getSubscriptionType().equals(ESubscriptionType.PRO);
+        } else {
+            isAvailable = subscriptionBenefit.getSubscriptionType().equals(ESubscriptionType.FREE);
+        }
+        return SubscriptionBenefitDto.builder()
+                .id(subscriptionBenefit.getId())
+                .benefitName(subscriptionBenefit.getBenefitName())
+                .is_available(isAvailable)
+                .build();
     }
 
 }

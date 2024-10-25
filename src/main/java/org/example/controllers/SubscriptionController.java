@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.example.exceptions.ResourceNotFoundException;
-import org.example.pojo.SubscriptionDto;
+import org.example.pojo.SubscriptionResponse;
 import org.example.pojo.SubscriptionsInfo;
 import org.example.services.impl.LessonServiceImpl;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +22,12 @@ public class SubscriptionController {
     @Operation(summary = "Получить актуальную подписку")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Информация успешно получена",
-                    content = @Content(schema = @Schema(implementation = SubscriptionDto.class))),
+                    content = @Content(schema = @Schema(implementation = SubscriptionResponse.class))),
             @ApiResponse(responseCode = "404", description = "Пользователь не найден",
                     content = @Content(schema = @Schema(implementation = ResourceNotFoundException.class)))
     })
     @GetMapping()
-    public SubscriptionDto getCurrentSubscription() {
+    public SubscriptionResponse getCurrentSubscription() {
         return lessonService.getCurrentSubscription();
     }
 
