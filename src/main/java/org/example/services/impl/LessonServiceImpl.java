@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.naming.NoPermissionException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -182,4 +184,26 @@ public class LessonServiceImpl {
                 .build();
     }
 
+    public SubscriptionAddInfo addSubscription(SubscriptionDto subscriptionDto, LocalDateTime dateTime) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+        user.setSubscription(subscriptionRepository.findByName(subscriptionDto.getName()));
+        user.setSubscriptionExpiresAt(dateTime.plusDays(30));
+        userRepository.save(user);
+        return SubscriptionAddInfo.builder()
+                .subscription(subscriptionDto)
+                .hasTelegramId(user.hasTelegramId())
+                .build();
+    }
+
+    public Long addTgId(TgAddRequest request) throws NoPermissionException {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
+        if (request.getEmail().equals(user.getEmail())) {
+            user.setTgId(request.getTgId());
+            return userRepository.save(user).getId();
+        } else {
+            throw new NoPermissionException();
+        }
+    }
 }

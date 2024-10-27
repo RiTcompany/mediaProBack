@@ -33,18 +33,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        var authHeader = request.getHeader(HEADER_NAME);
-        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, BEARER_PREFIX)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        var jwt = authHeader.substring(BEARER_PREFIX.length());
-        var email = jwtService.extractUserName(jwt);
-        if (StringUtils.isNotEmpty(email) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User userDetails = userService
-                    .getByUsername(email);
+        try {
+            var authHeader = request.getHeader(HEADER_NAME);
 
-            if (jwtService.isTokenValid(jwt, userDetails)) {
+            if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, BEARER_PREFIX)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authorization header is missing or invalid.");
+                return;
+            }
+
+            var jwt = authHeader.substring(BEARER_PREFIX.length());
+            var email = jwtService.extractUserName(jwt);
+
+
+            if (StringUtils.isNotEmpty(email) && SecurityContextHolder.getContext().getAuthentication() == null) {
+                User userDetails = userService.getByUsername(email);
+
+                if (!jwtService.isTokenValid(jwt, userDetails)) {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid token.");
+                    return;
+                }
+
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -57,7 +65,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 context.setAuthentication(authToken);
                 SecurityContextHolder.setContext(context);
             }
+        } catch (Exception e) {
+            logger.warn("JWT processing error: {}" + e.getMessage());
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid token.");
+            return;
         }
+
         filterChain.doFilter(request, response);
     }
+
 }

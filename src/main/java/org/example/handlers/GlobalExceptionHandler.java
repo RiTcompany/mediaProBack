@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.FileNotFoundException;
+import java.security.SignatureException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -16,6 +17,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<?> handleNullPointerException(NullPointerException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NO_CONTENT);
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<?> handleSignatureException(SignatureException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.valueOf(403));
     }
 
     @ExceptionHandler(FileNotFoundException.class)

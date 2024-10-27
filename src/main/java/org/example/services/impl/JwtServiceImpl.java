@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.security.SignatureException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class JwtServiceImpl implements org.example.services.JwtService {
 
 
     @Override
-    public String extractUserName(String token) {
+    public String extractUserName(String token) throws SignatureException {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -44,7 +45,7 @@ public class JwtServiceImpl implements org.example.services.JwtService {
 
 
     @Override
-    public boolean isTokenValid(String token, UserDetails userDetails) {
+    public boolean isTokenValid(String token, UserDetails userDetails) throws SignatureException {
         final String userName = extractUserName(token);
         return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
