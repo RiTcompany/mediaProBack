@@ -121,7 +121,7 @@ public class AuthController {
             @ApiResponse(responseCode = "404", description = "Пользователь не найден", content = @Content(schema = @Schema(implementation = EmailPinNotFoundException.class)))
     })
     @PatchMapping("/change")
-    public ResponseEntity<Long> changeUserData(@RequestBody ChangeUserDataRequest changeUserDataRequest) {
+    public ResponseEntity<JwtAuthenticationResponse> changeUserData(@RequestBody ChangeUserDataRequest changeUserDataRequest) {
         return ResponseEntity.ok(authenticationService.changeUserData(changeUserDataRequest));
     }
 }

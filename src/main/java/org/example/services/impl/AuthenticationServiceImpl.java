@@ -144,11 +144,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Long changeUserData(ChangeUserDataRequest changeUserDataRequest) {
+    public JwtAuthenticationResponse changeUserData(ChangeUserDataRequest changeUserDataRequest) {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
         user.setEmail(changeUserDataRequest.getEmail());
         user.setUsername(changeUserDataRequest.getUsername());
-        return userRepository.save(user).getId();
+        userRepository.save(user);
+        return new JwtAuthenticationResponse(jwtService.generateToken(user));
     }
 }

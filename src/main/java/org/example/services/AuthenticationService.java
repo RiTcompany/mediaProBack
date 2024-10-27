@@ -19,5 +19,5 @@ public interface AuthenticationService {
 
     Long changeForgottenPassword(ForgotPasswordRequest forgotPasswordRequest);
 
-    Long changeUserData(ChangeUserDataRequest changeUserDataRequest);
+    JwtAuthenticationResponse changeUserData(ChangeUserDataRequest changeUserDataRequest);
 }
