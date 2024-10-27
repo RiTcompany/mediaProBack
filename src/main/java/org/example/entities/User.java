@@ -37,8 +37,14 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private ERole role;
 
+    @ManyToOne
+    private Subscription subscription;
+
     @Column(name = "stars")
     private Integer stars = 0;
+
+    @Column(name = "tg_id", nullable = true)
+    private Long tgId;
 
     @Column(name = "streak")
     private Integer streak = 0;
@@ -102,5 +108,9 @@ public class User implements UserDetails {
     public int addStars() {
         this.stars++;
         return this.stars;
+    }
+
+    public boolean hasTelegramId() {
+        return tgId != null;
     }
 }
