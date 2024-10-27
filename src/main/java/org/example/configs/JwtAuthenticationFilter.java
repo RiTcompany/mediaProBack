@@ -38,8 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             var authHeader = request.getHeader(HEADER_NAME);
 
             if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, BEARER_PREFIX)) {
-                throw new AuthHeaderFoundException("Authorization header is missing or invalid.");
-            }
+            filterChain.doFilter(request, response);
+            return;
+        }
 
             var jwt = authHeader.substring(BEARER_PREFIX.length());
             var email = jwtService.extractUserName(jwt);
