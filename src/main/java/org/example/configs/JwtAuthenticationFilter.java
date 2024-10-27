@@ -8,6 +8,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.example.entities.User;
+import org.example.exceptions.AuthHeaderFoundException;
 import org.example.services.JwtService;
 import org.example.services.UserService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,8 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             var authHeader = request.getHeader(HEADER_NAME);
 
             if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, BEARER_PREFIX)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authorization header is missing or invalid.");
-                return;
+                throw new AuthHeaderFoundException("Authorization header is missing or invalid.");
             }
 
             var jwt = authHeader.substring(BEARER_PREFIX.length());

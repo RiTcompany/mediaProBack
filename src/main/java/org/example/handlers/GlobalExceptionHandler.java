@@ -19,6 +19,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NO_CONTENT);
     }
 
+    @ExceptionHandler(AuthHeaderFoundException.class)
+    public ResponseEntity<?> handleAuthHeaderFoundException(AuthHeaderFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.valueOf(401));
+    }
+
     @ExceptionHandler(SignatureException.class)
     public ResponseEntity<?> handleSignatureException(SignatureException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.valueOf(403));
