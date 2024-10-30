@@ -1,0 +1,9 @@
+[{
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.content.pro",
+      "sha256_cert_fingerprints":
+      ["DB:00:23:3F:D6:71:24:A2:83:64:87:4F:92:18:59:63:C3:BE:E6:71:94:57:48:B1:70:19:70:D7:87:F6:E3:DD"]
+    }
+}]
