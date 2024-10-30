@@ -9,10 +9,15 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.security.SignatureException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<?> handleIOException(IOException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<?> handleNullPointerException(NullPointerException ex) {
