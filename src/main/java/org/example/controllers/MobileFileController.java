@@ -22,4 +22,13 @@ public class MobileFileController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(fileContent);
     }
+
+    @GetMapping("/show/{file}")
+    public ResponseEntity<byte[]> showFile(@PathVariable("file") String file) throws IOException {
+        byte[] fileContent = mobileFileService.getStaticFile(file);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(fileContent);
+    }
+
 }
