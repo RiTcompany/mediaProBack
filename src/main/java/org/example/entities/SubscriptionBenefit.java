@@ -19,4 +19,7 @@ public class SubscriptionBenefit {
     private String benefitName;
 
     private ESubscriptionType subscriptionType;
+
+    @Column(name = "availability", columnDefinition="boolean default 'false'")
+    private boolean availability;
 }
