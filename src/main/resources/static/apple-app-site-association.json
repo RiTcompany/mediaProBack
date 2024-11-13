@@ -1,0 +1,15 @@
+{
+  "applinks":{
+    "apps":[
+       
+    ],
+    "details":[
+      {
+        {
+            "appID": "V5AP247TLY.com.content.pro",
+            "paths": [ "*" ]
+        }
+      }
+    ]
+  }
+}
