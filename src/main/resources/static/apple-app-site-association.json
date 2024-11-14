@@ -1,15 +1,26 @@
 {
-  "applinks":{
-    "apps":[
-       
-    ],
-    "details":[
+  "applinks": {
+    "apps": [],
+    "details": [
       {
-        {
-            "appID": "V5AP247TLY.com.content.pro",
-            "paths": [ "*" ]
-        }
+        "appIDs": [
+          "V5AP247TLY.com.content.pro"
+        ],
+        "paths": [
+          "*"
+        ],
+        "components": [
+          {
+            "/": "/*"
+          }
+        ]
       }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "V5AP247TLY.com.content.pro"
     ]
   }
 }
+
