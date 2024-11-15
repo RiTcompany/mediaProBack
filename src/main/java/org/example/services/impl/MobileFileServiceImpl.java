@@ -15,7 +15,7 @@ public class MobileFileServiceImpl implements MobileFileService {
 
     @Override
     public byte[] getStaticFile(String file) throws IOException {
-        return  Files.readAllBytes(Paths.get(staticSource.concat(file)));
+        return  Files.readAllBytes(Paths.get(staticSource.concat(file+".json")));
 
     }
 }
