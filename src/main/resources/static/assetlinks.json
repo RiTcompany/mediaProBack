@@ -1,9 +1,9 @@
 [{
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
-      "namespace": "android_app",
+      "namespace": "Content Pro",
       "package_name": "com.content.pro",
       "sha256_cert_fingerprints":
-      ["DB:00:23:3F:D6:71:24:A2:83:64:87:4F:92:18:59:63:C3:BE:E6:71:94:57:48:B1:70:19:70:D7:87:F6:E3:DD"]
+      ["DB:00:23:3F:D6:71:24:A2:83:64:87:4F:92:18:59:63:C3:BE:E6:71:94:57:48:B1:70:19:70:D7:87:F6:E3:DD","F7:C2:5A:CF:48:2B:5E:C8:8B:F6:F7:BF:45:DC:4B:05:58:4C:F4:0C:07:5F:CE:D4:E9:FD:AF:35:AB:5D:22:36"]
     }
 }]
