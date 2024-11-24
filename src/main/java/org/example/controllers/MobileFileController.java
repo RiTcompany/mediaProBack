@@ -13,6 +13,7 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 public class MobileFileController {
+
     private final MobileFileService mobileFileService;
 
     @GetMapping("/.well-known/{file}")
@@ -30,5 +31,4 @@ public class MobileFileController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(fileContent);
     }
-
 }

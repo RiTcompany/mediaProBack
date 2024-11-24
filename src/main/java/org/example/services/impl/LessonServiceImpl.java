@@ -96,10 +96,24 @@ public class LessonServiceImpl {
             return null;
         }
 
-        return new LessonFullDto(lesson.getId(), lesson.getCourse() != null ? lesson.getCourse().getId() : null,
-                lesson.getName(), lesson.getDescription(), lesson.getContent(), lesson.getPracticeTask(), lesson.getVideoUrl(),
-                lesson.getDuration(), userLesson.getIsCompleted(), userLesson.getCompletedSetTime(), lesson.getAccessLevel(),
-                userLesson.getIsFavourite(), isAvailable, userLesson.getFavouriteSetTime(), lesson.getTags());
+        return LessonFullDto.builder()
+                .id(lesson.getId())
+                .courseId(lesson.getCourse() != null ? lesson.getCourse().getId() : null)
+                .name(lesson.getName())
+                .description(lesson.getDescription())
+                .content(lesson.getContent())
+                .practiceTask(lesson.getPracticeTask())
+                .videoUrl(lesson.getVideoUrl())
+                .duration(lesson.getDuration())
+                .isCompleted(userLesson.getIsCompleted())
+                .completedSetTime(userLesson.getCompletedSetTime())
+                .accessLevel(lesson.getAccessLevel())
+                .isFavourite(userLesson.getIsFavourite())
+                .isAvailable(isAvailable)
+                .favouriteSetTime(userLesson.getFavouriteSetTime())
+                .tags(lesson.getTags())
+                .isAvailableForPracticeTaskCheck(user.getRole().equals(ERole.ROLE_PRO))
+                .build();
     }
 
     public CollectStarsInfo addLessonToStreak(Long id, LocalDateTime dateTime) {
@@ -187,7 +201,8 @@ public class LessonServiceImpl {
     public SubscriptionAddInfo addSubscription(SubscriptionDto subscriptionDto, LocalDateTime dateTime) {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        user.setSubscription(subscriptionRepository.findByName(subscriptionDto.getName()));
+        user.setSubscriptionId(subscriptionDto.getId());
+        user.setRole(ERole.valueOf(subscriptionDto.getName()));
         user.setSubscriptionExpiresAt(dateTime.plusDays(30));
         userRepository.save(user);
         return SubscriptionAddInfo.builder()

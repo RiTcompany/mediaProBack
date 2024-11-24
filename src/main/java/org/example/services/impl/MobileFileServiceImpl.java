@@ -18,6 +18,5 @@ public class MobileFileServiceImpl implements MobileFileService {
     public byte[] getStaticFile(String file) throws IOException {
         if (Objects.equals(file, "apple-app-site-association")) file = file+".json";
         return  Files.readAllBytes(Paths.get(staticSource.concat(file)));
-
     }
 }

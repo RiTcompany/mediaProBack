@@ -37,8 +37,8 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private ERole role;
 
-    @ManyToOne
-    private Subscription subscription;
+    @Column(name = "subscription_id")
+    private Integer subscriptionId;
 
     @Column(name = "stars")
     private Integer stars = 0;
