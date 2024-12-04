@@ -194,7 +194,7 @@ public class LessonServiceImpl {
         return SubscriptionBenefitDto.builder()
                 .id(subscriptionBenefit.getId())
                 .benefitName(subscriptionBenefit.getBenefitName())
-                .is_available(isAvailable)
+                .isAvailable(isAvailable)
                 .build();
     }
 
