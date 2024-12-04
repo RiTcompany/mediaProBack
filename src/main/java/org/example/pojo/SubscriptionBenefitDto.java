@@ -8,5 +8,5 @@ import lombok.Value;
 public class SubscriptionBenefitDto {
     Long id;
     String benefitName;
-    boolean is_available;
+    boolean isAvailable;
 }
