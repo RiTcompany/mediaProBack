@@ -202,7 +202,7 @@ public class LessonServiceImpl {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
         user.setSubscriptionId(subscriptionDto.getId());
-        user.setRole(ERole.valueOf(subscriptionDto.getName()));
+        user.setRole(ERole.valueOf("ROLE_" + subscriptionDto.getName()));
         user.setSubscriptionExpiresAt(dateTime.plusDays(30));
         userRepository.save(user);
         return SubscriptionAddInfo.builder()
