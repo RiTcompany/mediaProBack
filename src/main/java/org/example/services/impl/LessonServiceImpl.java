@@ -145,11 +145,11 @@ public class LessonServiceImpl {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
         return CollectStarsInfo.builder()
-                .currentLessonStreak(user.getRole().equals(ERole.ROLE_FREE) ? user.getStreak() : null)
+                .currentLessonStreak(!user.getRole().equals(ERole.ROLE_FREE) ? user.getStreak() : 0)
                 .targetLessonStreak(3)
-                .currentStarsCount(user.getRole().equals(ERole.ROLE_FREE) ? user.getStars() : null)
+                .currentStarsCount(!user.getRole().equals(ERole.ROLE_FREE) ? user.getStars() : 0)
                 .targetStarsCount(21)
-                .expiresAt(user.getRole().equals(ERole.ROLE_FREE) ? user.getSubscriptionExpiresAt() : null)
+                .expiresAt(!user.getRole().equals(ERole.ROLE_FREE) ? user.getSubscriptionExpiresAt() : null)
                 .featureDiscount(0.1).build();
     }
 
@@ -164,7 +164,7 @@ public class LessonServiceImpl {
     }
 
     public SubscriptionsInfo getAllSubscriptions() {
-        return SubscriptionsInfo.builder().subscriptions(subscriptionRepository.findAll().stream().map(this::convertSubscriptionToDto).toList()).discount(0.1).build();
+        return SubscriptionsInfo.builder().subscriptions(subscriptionRepository.findAll().stream().map(this::convertSubscriptionToDto).toList()).build();
     }
 
     private SubscriptionDto convertSubscriptionToDto(Subscription subscription) {
