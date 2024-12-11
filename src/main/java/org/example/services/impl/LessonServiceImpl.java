@@ -133,12 +133,12 @@ public class LessonServiceImpl {
         userLessonRepository.save(userLesson);
         userRepository.save(user);
         return CollectStarsInfo.builder()
-                .currentLessonStreak(user.getRole().equals(ERole.ROLE_FREE) ? user.getStreak() : null)
+                .currentLessonStreak(!user.getRole().equals(ERole.ROLE_FREE) ? user.getStreak() : null)
                 .targetLessonStreak(3)
-                .currentStarsCount(user.getRole().equals(ERole.ROLE_FREE) ? user.getStars() : null)
+                .currentStarsCount(!user.getRole().equals(ERole.ROLE_FREE) ? user.getStars() : null)
                 .targetStarsCount(21)
-                .expiresAt(user.getRole().equals(ERole.ROLE_FREE) ? user.getSubscriptionExpiresAt() : null)
-                .featureDiscount(0.1).build();
+                .expiresAt(!user.getRole().equals(ERole.ROLE_FREE) ? user.getSubscriptionExpiresAt() : null)
+                .featureDiscount(user.getStars() >= 21 ? 0.1 : 0).build();
     }
 
     public CollectStarsInfo getStreakAndStarsInfo() {
@@ -150,7 +150,7 @@ public class LessonServiceImpl {
                 .currentStarsCount(!user.getRole().equals(ERole.ROLE_FREE) ? user.getStars() : 0)
                 .targetStarsCount(21)
                 .expiresAt(!user.getRole().equals(ERole.ROLE_FREE) ? user.getSubscriptionExpiresAt() : null)
-                .featureDiscount(0.1).build();
+                .featureDiscount(user.getStars() >= 21 ? 0.1 : 0).build();
     }
 
     public SubscriptionResponse getCurrentSubscription() {

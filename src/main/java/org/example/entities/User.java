@@ -40,13 +40,13 @@ public class User implements UserDetails {
     @Column(name = "subscription_id")
     private Integer subscriptionId;
 
-    @Column(name = "stars")
+    @Column(name = "stars", columnDefinition = "integer default 0")
     private Integer stars = 0;
 
     @Column(name = "tg_id", nullable = true)
     private Long tgId;
 
-    @Column(name = "streak")
+    @Column(name = "streak", columnDefinition = "integer default 0")
     private Integer streak = 0;
 
     @Column(name = "subscription_expires_at")
