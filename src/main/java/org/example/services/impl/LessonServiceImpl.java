@@ -156,7 +156,8 @@ public class LessonServiceImpl {
     public SubscriptionResponse getCurrentSubscription() {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + SecurityContextHolder.getContext().getAuthentication().getName()));
-        Subscription subscription = subscriptionRepository.findByName(user.getRole().name());
+        Subscription subscription = subscriptionRepository.findById(user.getSubscriptionId().longValue())
+                .orElseThrow(() -> new UsernameNotFoundException("Missing subscription"));
         return SubscriptionResponse.builder()
                 .expirationDate(user.getSubscriptionExpiresAt())
                 .subscription(convertSubscriptionToDto(subscription))
